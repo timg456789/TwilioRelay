@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web;
 using Twilio;
 using TwilioSmsRelay;
 using Xunit;
@@ -17,6 +21,23 @@ namespace TwilioSmsRelayTests
         }
 
         [Fact]
+        public void Test_Auth()
+        {
+            var config = PrivateConfig.CreateFromPersonalJson();
+            var hmacsha1 = new HMACSHA1(Encoding.UTF8.GetBytes(config.TwilioProductionToken));
+            var sigData = TwilioRequestValidator.GetSignatureData(
+                "TWILIO WEB HOOK URL",
+                "RAW TWILIO WEB HOOK POST DATA"
+                    .Split('&')
+                    .ToDictionary(
+                        x => HttpUtility.UrlDecode(x.Split('=')[0]), // Note: Converts pluses to spaces
+                        x => HttpUtility.UrlDecode(x.Split('=')[1])));
+            output.WriteLine(sigData);
+            var actualSignature = Convert.ToBase64String(hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(sigData)));
+            Assert.True(TwilioRequestValidator.SecureCompare(actualSignature, "TWILIO_SIGNATURE_FROM_HTTP_HEADER"));
+        }
+        
+        //[Fact]
         public void Test_SMS_Receiving()
         {
             var config = PrivateConfig.CreateFromPersonalJson();
@@ -31,7 +52,7 @@ namespace TwilioSmsRelayTests
             relay.RelayMessage("+15555555555", "hi " + Guid.NewGuid().ToString().Substring(0, 10));
         }
 
-        [Fact]
+        //[Fact]
         public void Test_SMS_Forwarding()
         {
             var config = PrivateConfig.CreateFromPersonalJson();

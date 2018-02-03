@@ -44,7 +44,7 @@ namespace TwilioSmsRelayTests
         [JsonProperty("twilioSmsPotArn")]
         public string TwilioSmsPotArn { get; set; }
 
-        public static string PersonalJson => "C:\\Users\\peon\\Desktop\\projects\\Memex\\personal.json";
+        public static string PersonalJson => "C:\\Users\\peon\\Desktop\\personal.json";
 
         public static PrivateConfig CreateFromPersonalJson()
         {
