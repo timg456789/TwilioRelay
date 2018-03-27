@@ -76,5 +76,12 @@ namespace TwilioSmsRelayTests
             );
         }
 
+        [Fact]
+        public void Message_Forwarding_Validation()
+        {
+            var split = Validation.SplitNumber("+15555555555 hey");
+            Assert.Equal(string.Empty, Validation.IsValidToForward(split));
+        }
+
     }
 }
