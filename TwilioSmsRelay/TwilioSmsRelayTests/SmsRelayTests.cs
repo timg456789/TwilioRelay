@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 using TwilioSmsRelay;
 using Xunit;
 using Xunit.Abstractions;
@@ -81,6 +83,21 @@ namespace TwilioSmsRelayTests
         {
             var split = Validation.SplitNumber("+15555555555 hey");
             Assert.Equal(string.Empty, Validation.IsValidToForward(split));
+        }
+
+        [Fact]
+        public void List_Phone_Numbers()
+        {
+            var config = PrivateConfig.CreateFromPersonalJson();
+
+            TwilioClient.Init(
+                config.TwilioProductionSid,
+                config.TwilioProductionToken);
+
+            var numbers = IncomingPhoneNumberResource.Read(
+                phoneNumber: new PhoneNumber("+17278886973"));
+
+            output.WriteLine(numbers.Single().Sid);
         }
 
     }

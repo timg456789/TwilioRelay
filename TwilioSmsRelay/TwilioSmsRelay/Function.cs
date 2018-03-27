@@ -16,7 +16,6 @@ namespace TwilioSmsRelay
     {
         protected List<string> knownNumbers = new List<string>
         {
-            Environment.GetEnvironmentVariable("phoneNumberTwilioPurchased"),
             Environment.GetEnvironmentVariable("phoneNumberTwilioPurchasedNorthSanDiego"),
             Environment.GetEnvironmentVariable("phoneNumberTwilioPurchasedSouthSanDiego"),
             Environment.GetEnvironmentVariable("phoneNumberCellPhone")
@@ -43,14 +42,13 @@ namespace TwilioSmsRelay
                 return Responses.ForbiddenResponse;
             }
 
-            return new Relay(
+            var relay = new Relay(
                 new ConsoleLogging(),
                 knownNumbers,
-                Environment.GetEnvironmentVariable("phoneNumberTwilioPurchased"),
-                    Environment.GetEnvironmentVariable("phoneNumberCellPhone"))
-                .RelayMessage(
-                    parameters["From"],
-                    parameters["Body"]);
+                parameters["To"],
+                Environment.GetEnvironmentVariable("phoneNumberCellPhone"));
+
+            return relay.RelayMessage(parameters["From"], parameters["Body"]);
         }
 
     }

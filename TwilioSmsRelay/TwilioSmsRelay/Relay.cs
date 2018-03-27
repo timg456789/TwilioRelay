@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Amazon.Lambda.APIGatewayEvents;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -36,6 +35,21 @@ namespace TwilioSmsRelay
                     to: new PhoneNumber(defaultRelayNumber),
                     from: relayNumber,
                     body: knownMessage);
+                return Responses.EmptyResponse;
+            }
+
+            if (body.Equals("hop", StringComparison.OrdinalIgnoreCase))
+            {
+                var toNumber = IncomingPhoneNumberResource.Read(phoneNumber: new PhoneNumber(relayNumber)).Single();
+                
+                var newNumber = new SmsHop().Hop(Environment.GetEnvironmentVariable("twilioProductionSid"), toNumber.Sid, logging);
+
+                MessageResource.Create(
+                    to: from,
+                    from: relayNumber,
+                    body:
+                    $"New phone number for Twilio Relay {newNumber.PhoneNumber.ToString()} - " +
+                    $"{newNumber.Sid}");
                 return Responses.EmptyResponse;
             }
 
