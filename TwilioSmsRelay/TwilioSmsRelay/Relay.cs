@@ -46,7 +46,7 @@ namespace TwilioSmsRelay
 
                 MessageResource.Create(
                     to: from,
-                    from: relayNumber,
+                    from: newNumber.PhoneNumber,
                     body:
                     $"New phone number for Twilio Relay {newNumber.PhoneNumber.ToString()} - " +
                     $"{newNumber.Sid}");
